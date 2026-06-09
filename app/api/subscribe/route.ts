@@ -19,8 +19,9 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  if (!res.ok && res.status !== 204) {
+  if (!res.ok && res.status !== 201 && res.status !== 204) {
     const err = await res.text();
+    console.error("Brevo subscribe error:", res.status, err);
     return NextResponse.json({ error: err }, { status: 500 });
   }
 

@@ -299,16 +299,6 @@ function SkillMap() {
                   </div>
                 )}
 
-                <div className="bg-zinc-900 border border-amber-400 rounded-xl p-5">
-                  <p className="text-sm font-semibold text-white mb-1">Ready to close these gaps?</p>
-                  <p className="text-xs text-zinc-400 mb-4">Cimulate trains non-technical professionals on exactly these domains — through real work scenarios, not slides.</p>
-                  <a
-                    href="https://cimulate.ai"
-                    className="inline-block bg-amber-400 text-zinc-950 font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-amber-300 transition-colors"
-                  >
-                    Join the waitlist →
-                  </a>
-                </div>
 
                 {(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE || process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || process.env.NEXT_PUBLIC_SOCIAL_TIKTOK) && (
                   <div className="text-center space-y-2">
@@ -324,18 +314,6 @@ function SkillMap() {
               </div>
             )}
 
-            {!emailSent && (
-              <div className="border border-zinc-800 rounded-xl p-5">
-                <p className="text-sm font-semibold text-white mb-1">Ready to close these gaps?</p>
-                <p className="text-xs text-zinc-400 mb-4">Cimulate trains non-technical professionals on exactly these domains — through real work scenarios, not slides.</p>
-                <a
-                  href="https://cimulate.ai"
-                  className="inline-block bg-zinc-800 text-white text-sm px-5 py-2.5 rounded-lg hover:bg-zinc-700 transition-colors"
-                >
-                  Join the waitlist →
-                </a>
-              </div>
-            )}
           </div>
         )}
       </div>
