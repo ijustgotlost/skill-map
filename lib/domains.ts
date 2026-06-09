@@ -68,6 +68,7 @@ export const ROLE_DOMAIN_WEIGHTS: Record<string, Partial<Record<DomainKey, numbe
 export type UserAnswers = {
   role: string;
   industry: string;
+  experience: string;
   usedAI: "yes" | "no" | "sometimes";
   biggestChallenge: string;
   upskillGoal: string;

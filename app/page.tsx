@@ -37,14 +37,14 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-10">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-3">Free assessment</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 leading-tight mb-4">
+          <p className="text-xs font-medium text-amber-400 uppercase tracking-widest mb-3">Free assessment</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-white leading-tight mb-4">
             Your AI Skill Map
           </h1>
-          <p className="text-base text-gray-600 leading-relaxed">
+          <p className="text-base text-zinc-400 leading-relaxed">
             The workforce isn&apos;t collapsing — it&apos;s recalibrating. Find out which AI skills your role actually needs and where you stand right now.
           </p>
         </div>
@@ -56,8 +56,8 @@ export default function LandingPage() {
             "Get a concrete first step — not a course list",
           ].map((item) => (
             <div key={item} className="flex items-start gap-3">
-              <span className="text-gray-300 mt-0.5">→</span>
-              <p className="text-sm text-gray-600">{item}</p>
+              <span className="text-amber-400 mt-0.5">→</span>
+              <p className="text-sm text-zinc-300">{item}</p>
             </div>
           ))}
         </div>
@@ -69,20 +69,20 @@ export default function LandingPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
             autoFocus
           />
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-red-400 text-xs">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 text-white text-sm py-3 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="w-full bg-amber-400 text-zinc-950 font-semibold text-sm py-3 rounded-lg hover:bg-amber-300 transition-colors disabled:opacity-50"
           >
             {loading ? "One moment…" : "Get my skill map →"}
           </button>
         </form>
 
-        <p className="text-xs text-gray-400 mt-4 text-center">
+        <p className="text-xs text-zinc-600 mt-4 text-center">
           Your report is emailed to you. No spam.
         </p>
       </div>
