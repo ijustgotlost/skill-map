@@ -16,43 +16,48 @@ export async function POST(req: NextRequest) {
   const regulatoryDriver = getRegulatoryDriver(answers.industry, answers.role);
   const experienceContext = getExperienceContext(answers.experience);
 
-  const prompt = `You are an AI workforce gap analyst. A professional completed the Your AI Skill Map assessment. Write a specific, personal gap report — not generic career advice.
+  const prompt = `You are an AI workforce gap analyst. Write a personal gap report for this professional. Each gap is exactly 3 short sentences — no paragraphs, no run-ons.
 
-THEIR PROFILE:
+PROFILE:
 - Role: ${answers.role}
 - Industry: ${answers.industry}
 - Experience: ${answers.experience} (${experienceContext})
-- AI tool experience: ${answers.usedAI}
+- AI tool usage: ${answers.usedAI}
 - Biggest challenge: ${answers.biggestChallenge}
 - Goal: ${answers.upskillGoal}
 - Timeline: ${answers.timeline}
-- Regulatory pressure on their role: ${regulatoryDriver}
+- Regulatory pressure: ${regulatoryDriver}
 
-THEIR TOP 3 SKILL GAPS (from Domain Model — 8 AI competency domains):
-${domainDetails.map((d, i) => `GAP ${i + 1}: ${d.name}
-What this domain covers: ${d.description}
-What the gap looks like: ${d.gap}
-First concrete step: ${d.firstStep}`).join("\n\n")}
+THEIR 3 GAPS:
+${domainDetails.map((d, i) => `Gap ${i + 1}: **${d.name}**
+Context: ${d.gap}`).join("\n\n")}
 
-Write exactly 3 numbered gap findings. Each finding is 2-3 sentences maximum. Use this structure for each:
+FORMAT — output exactly this, no extra text:
 
-GAP 1: [Domain name in bold — written as: **Domain Name**]
-What it means for a [their role] in [their industry] specifically. What they are likely doing right now that signals this gap. What changes when they close it — one specific outcome, not a vague benefit.
+**[Gap 1 Domain Name]**
+[One sentence: what this gap costs them specifically in their role right now.]
+[One sentence: what employers in their industry are requiring that they don't have yet.]
+[One sentence: what changes when they close it — one concrete outcome.]
 
-GAP 2: Same structure. Connect to their biggest challenge directly. Name the real-world consequence they are already experiencing because of this gap.
+**[Gap 2 Domain Name]**
+[One sentence: how their biggest challenge (${answers.biggestChallenge}) is a direct symptom of this gap.]
+[One sentence: what they're likely doing instead that signals this gap.]
+[One sentence: what closes first when this is fixed.]
 
-GAP 3: Same structure. Connect to their goal (${answers.upskillGoal}). Name the regulatory or market pressure (${regulatoryDriver}) making this urgent for their industry specifically.
+**[Gap 3 Domain Name]**
+[One sentence: why ${regulatoryDriver} makes this urgent for their role and industry right now.]
+[One sentence: what their goal (${answers.upskillGoal}) requires that they can't yet demonstrate.]
+[One sentence: the specific credential, skill, or behavior that changes their positioning.]
 
-End with one sentence: what becoming proficient across these 3 domains makes possible for someone at their experience level in their specific role.
+[One final sentence: what opening across all 3 domains makes possible for a ${answers.experience}-year ${answers.role} in ${answers.industry}.]
 
 Rules:
-- Never say "leverage," "landscape," "journey," or "empower"
-- Speak to a professional who has been doing their job for years — not a student
-- Every sentence must be specific to their role, industry, and experience level
-- If their challenge is risk/compliance, lead with the regulatory pressure
-- If their goal is leadership, frame gaps as what's blocking their credibility in the room
-- If their goal is making a move, frame gaps as what's missing from their profile
-- Max 180 words total across all 3 gaps plus closing sentence`;
+- Each sentence stands alone — no conjunctions connecting thoughts across sentences
+- Every sentence is specific to their role, industry, and experience level
+- Bold only domain names using **name**
+- Never say: leverage, landscape, journey, empower, ecosystem, navigate
+- No filler phrases like "In today's world" or "As AI continues to"
+- Speak to someone who has been doing this job for years`;
 
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",

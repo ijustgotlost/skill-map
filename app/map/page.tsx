@@ -56,8 +56,8 @@ function SkillMap() {
   const [inputValue, setInputValue] = useState("");
   const [report, setReport] = useState<string>("");
   const [domains, setDomains] = useState<DomainResult[]>([]);
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailSending, setEmailSending] = useState(false);
+  const [waitlisted, setWaitlisted] = useState(false);
+  const [waitlisting, setWaitlisting] = useState(false);
   const [error, setError] = useState("");
 
   const progress = Math.min((stepIndex[step] / TOTAL_STEPS) * 100, 100);
@@ -95,20 +95,20 @@ function SkillMap() {
     }
   }
 
-  async function sendEmail() {
-    setEmailSending(true);
+  async function joinWaitlist() {
+    setWaitlisting(true);
     try {
-      const res = await fetch("/api/send-report", {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: answers.email, report, domains, role: answers.role }),
+        body: JSON.stringify({ email: answers.email, listId: 7 }),
       });
-      if (!res.ok) throw new Error("send failed");
-      setEmailSent(true);
+      if (!res.ok) throw new Error("subscribe failed");
+      setWaitlisted(true);
     } catch {
-      setError("Couldn't send email. Try again.");
+      setError("Couldn't add you. Try again.");
     } finally {
-      setEmailSending(false);
+      setWaitlisting(false);
     }
   }
 
@@ -247,70 +247,50 @@ function SkillMap() {
         )}
 
         {step === "report" && (
-          <div className="space-y-5">
+          <div className="space-y-8">
+
             <div>
-              <p className="text-xs font-medium text-amber-400 uppercase tracking-widest mb-5">Your gap report</p>
-              <div className="space-y-5">
-                {report.split(/\n\n+/).filter(Boolean).map((para, i) => (
-                  <div key={i} className="flex gap-4">
-                    <span className="text-3xl font-bold text-amber-400 leading-none mt-0.5 shrink-0">{i + 1}</span>
-                    <p className="text-sm text-zinc-200 leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-semibold">$1</span>') }}
-                    />
+              <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-6">Your AI Skill Map</p>
+              <div className="space-y-6">
+                {report.split(/\n\n+/).filter(Boolean).map((block, i) => (
+                  <div key={i} className="flex gap-5">
+                    <span className="text-4xl font-black text-amber-400 leading-none shrink-0 mt-0.5">{i + 1}</span>
+                    <div className="space-y-2">
+                      {block.split(/(?<=[.!?])\s+/).filter(Boolean).map((sentence, j) => (
+                        <p
+                          key={j}
+                          className="text-sm text-zinc-200 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: sentence.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-bold">$1</span>') }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="border-t border-zinc-800 pt-5 space-y-3">
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">First steps</p>
+            <div className="border-t border-zinc-800 pt-6 space-y-3">
+              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Your top 3 gaps — where to start</p>
               {domains.map((d, i) => (
-                <div key={d.key} className="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
-                  <p className="text-xs font-semibold text-amber-400 mb-1">{i + 1}. {d.name}</p>
-                  <p className="text-xs text-zinc-300 leading-relaxed">{d.firstStep}</p>
+                <div key={d.key} className="bg-zinc-900 rounded-xl p-5 border border-zinc-800">
+                  <p className="text-sm font-bold text-amber-400 mb-2">{i + 1}. {d.name}</p>
+                  <p className="text-sm text-zinc-300 leading-relaxed">{d.firstStep}</p>
                 </div>
               ))}
             </div>
 
-            {!emailSent ? (
+            {!waitlisted ? (
               <button
-                onClick={sendEmail}
-                disabled={emailSending}
-                className="w-full bg-amber-400 text-zinc-950 font-semibold text-sm py-4 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50 mt-2"
+                onClick={joinWaitlist}
+                disabled={waitlisting}
+                className="w-full bg-amber-400 text-zinc-950 font-bold text-sm py-4 rounded-xl hover:bg-amber-300 transition-colors disabled:opacity-50"
               >
-                {emailSending ? "Sending…" : `Send this report to ${answers.email} →`}
+                {waitlisting ? "Adding you…" : "Join the Cimulate waitlist →"}
               </button>
             ) : (
-              <div className="space-y-5">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-                  <p className="text-sm font-semibold text-white mb-1">Report sent. Check your inbox.</p>
-                  <p className="text-xs text-zinc-400">While you wait — watch this.</p>
-                </div>
-
-                {process.env.NEXT_PUBLIC_NOW_WHAT_VIDEO && (
-                  <div className="rounded-xl overflow-hidden aspect-video w-full">
-                    <iframe
-                      src={process.env.NEXT_PUBLIC_NOW_WHAT_VIDEO}
-                      title="What to do with your AI skill gap"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
-
-
-                {(process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE || process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || process.env.NEXT_PUBLIC_SOCIAL_TIKTOK) && (
-                  <div className="text-center space-y-2">
-                    <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Follow for weekly breakdowns</p>
-                    <div className="flex justify-center gap-4">
-                      {process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE && <a href={process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE} target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-400 hover:text-white transition-colors">YouTube</a>}
-                      {process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN && <a href={process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-400 hover:text-white transition-colors">LinkedIn</a>}
-                      {process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM && <a href={process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-400 hover:text-white transition-colors">Instagram</a>}
-                      {process.env.NEXT_PUBLIC_SOCIAL_TIKTOK && <a href={process.env.NEXT_PUBLIC_SOCIAL_TIKTOK} target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-400 hover:text-white transition-colors">TikTok</a>}
-                    </div>
-                  </div>
-                )}
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+                <p className="text-sm font-bold text-white mb-1">You&apos;re on the list.</p>
+                <p className="text-xs text-zinc-400">We&apos;ll reach out when your spot opens.</p>
               </div>
             )}
 
@@ -326,7 +306,7 @@ function Card({ children }: { children: React.ReactNode }) {
 }
 
 function Question({ children }: { children: React.ReactNode }) {
-  return <p className="text-xl font-medium text-white leading-snug mb-5">{children}</p>;
+  return <p className="text-2xl font-bold text-white leading-snug mb-6">{children}</p>;
 }
 
 function Options({ children }: { children: React.ReactNode }) {
@@ -337,7 +317,7 @@ function Opt({ children, onClick }: { children: React.ReactNode; onClick: () => 
   return (
     <button
       onClick={onClick}
-      className="w-full text-left px-4 py-3 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-gray-900 hover:text-gray-900 transition-colors"
+      className="w-full text-left px-4 py-3.5 rounded-lg border border-zinc-700 bg-zinc-900 text-sm text-zinc-200 hover:border-amber-400 hover:text-white hover:bg-zinc-800 transition-colors"
     >
       {children}
     </button>
@@ -348,7 +328,7 @@ function Btn({ children, onClick }: { children: React.ReactNode; onClick: () => 
   return (
     <button
       onClick={onClick}
-      className="w-full bg-gray-900 text-white text-sm py-3 rounded-lg hover:bg-gray-700 transition-colors"
+      className="w-full bg-zinc-800 text-white text-sm font-semibold py-3.5 rounded-lg border border-zinc-600 hover:bg-zinc-700 hover:border-zinc-500 transition-colors"
     >
       {children}
     </button>

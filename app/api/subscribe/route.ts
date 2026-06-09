@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json();
+  const { email, listId } = await req.json();
   const apiKey = process.env.BREVO_API_KEY;
 
   if (!apiKey) return NextResponse.json({ error: "Brevo not configured" }, { status: 500 });
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify({
       email,
-      listIds: [Number(process.env.BREVO_LIST_ID) || 2],
+      listIds: [listId ?? Number(process.env.BREVO_LIST_ID) ?? 2],
       updateEnabled: true,
     }),
   });
